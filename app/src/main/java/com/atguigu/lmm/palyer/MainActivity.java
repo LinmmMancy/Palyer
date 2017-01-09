@@ -1,5 +1,9 @@
 package com.atguigu.lmm.palyer;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -33,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
         rg_main = (RadioGroup) findViewById(R.id.rg_main);
 
+        isGrantExternalRW(this);
+
         initFragment();
 
 
@@ -41,6 +47,23 @@ public class MainActivity extends AppCompatActivity {
         initListennr();
 
     }
+
+    public static boolean isGrantExternalRW(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity.checkSelfPermission(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            activity.requestPermissions(new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, 1);
+
+            return false;
+        }
+
+        return true;
+    }
+
+
 
     private void initListennr() {
         rg_main.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -69,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         rg_main.check(R.id.rb_local_video);
     }
+
 
     private void switchFragment(Fragment currentFragment) {
         if (tempFragment != currentFragment) {
@@ -109,6 +133,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+
     }
 }
