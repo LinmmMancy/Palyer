@@ -191,6 +191,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         } else if (v == btnExit) {
             finish();
         } else if (v == btnPre) {
+            setPreVideo();
 
         } else if (v == btnStartPause) {
 
@@ -208,10 +209,95 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
             }
 
         } else if (v == btnNext) {
+            setNextVideo();
 
         } else if (v == btnSwichScreen) {
 
         }
+
+    }
+
+    private void setNextVideo() {
+        //判断一下列表
+        if (mediaItems != null && mediaItems.size() > 0) {
+            position++;
+            if (position < mediaItems.size()) {
+                MediaItem mediaItem = mediaItems.get(position);
+                //设置标题
+                tvName.setText(mediaItem.getName());
+                //设置播放地址
+                videoView.setVideoPath(mediaItem.getData());
+                checkButtonStatus();
+            } else {
+                //越界
+                position = mediaItems.size() - 1;
+                finish();
+            }
+        }
+        // 单个的uri
+        else if (uri != null) {
+            finish();
+        }
+
+    }
+
+    private void setPreVideo() {
+        if (mediaItems != null && mediaItems.size() > 0) {
+            position--;
+            if (position > 0) {
+                MediaItem mediaItem = mediaItems.get(position);
+                //设置标题
+                tvName.setText(mediaItem.getName());
+                //设置播放地址
+                videoView.setVideoPath(mediaItem.getData());
+                checkButtonStatus();
+            } else {
+                //越界
+                position = 0;
+            }
+        }
+    }
+
+    private void checkButtonStatus() {
+        //判断一下列表
+        if (mediaItems != null && mediaItems.size() > 0) {
+            //其他默认设置
+            setButtonEnable(true);
+            //播放第0个。上一个i设置灰色
+            if (position == 0) {
+                btnPre.setBackgroundResource(R.drawable.btn_pre_gray);
+                btnPre.setEnabled(false);
+
+            }
+            if (position == mediaItems.size() - 1) {
+                btnNext.setBackgroundResource(R.drawable.btn_next_gray);
+                btnNext.setEnabled(false);
+            }
+        }
+        //单个URI
+        else if (uri != null) {
+            //上一个和下一个都要设置灰色
+            setButtonEnable(false);
+        }
+
+    }
+
+    /**
+     * 设置按钮的可点状态
+     *
+     * @param isEnable
+     */
+    private void setButtonEnable(boolean isEnable) {
+
+        if (isEnable) {
+            btnPre.setBackgroundResource(R.drawable.btn_pre_selector);
+            btnNext.setBackgroundResource(R.drawable.btn_next_selector);
+        } else {
+            btnPre.setBackgroundResource(R.drawable.btn_pre_gray);
+            btnNext.setBackgroundResource(R.drawable.btn_next_gray);
+        }
+        btnPre.setEnabled(isEnable);
+        btnNext.setEnabled(isEnable);
 
     }
 
@@ -229,6 +315,8 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
             videoView.setVideoURI(uri);
             tvName.setText(uri.toString());
         }
+
+        checkButtonStatus();
 
     }
 
@@ -296,6 +384,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         @Override
         public void onCompletion(MediaPlayer mp) {
             //播放视频下一个
+            setNextVideo();
 
         }
     }
