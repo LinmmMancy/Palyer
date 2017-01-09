@@ -64,6 +64,13 @@ public abstract class BaseFragment extends Fragment {
 
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            onRefrshData();
+        }
+    }
 
     public void onRefrshData() {
 

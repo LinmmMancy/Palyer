@@ -1,9 +1,11 @@
-package com.atguigu.lmm.palyer.adapter;
+package com.atguigu.lmm.palyer.bean;
+
+import java.io.Serializable;
 
 /**
  * Created by Mancy_Lin on 2017/1/9.
  */
-public class MediaItem {
+public class MediaItem implements Serializable {
 
     String name;
     long duration;

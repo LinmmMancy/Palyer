@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.atguigu.lmm.palyer">
 
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -22,9 +23,12 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="screenSize|orientation|keyboardHidden"
-            android:launchMode="singleTask"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.SystemVideoPlayerActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
 
-            ></activity>
     </application>
 
 </manifest>

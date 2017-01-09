@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void initListennr() {
         rg_main.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

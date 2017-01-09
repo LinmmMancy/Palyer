@@ -29,4 +29,10 @@ public class localMusicFragment extends BaseFragment {
         super.initData();
         textView.setText("本地音频");
     }
+
+    @Override
+    public void onRefrshData() {
+        super.onRefrshData();
+        textView.setText("本地音乐刷新");
+    }
 }

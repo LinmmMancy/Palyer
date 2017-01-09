@@ -29,4 +29,10 @@ public class netMusicFragment extends BaseFragment {
         super.initData();
         textView.setText("网络音频");
     }
+
+    @Override
+    public void onRefrshData() {
+        super.onRefrshData();
+        textView.setText("本地音乐刷新");
+    }
 }

@@ -1,18 +1,22 @@
 package com.atguigu.lmm.palyer.fragment;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.atguigu.lmm.palyer.R;
+import com.atguigu.lmm.palyer.activity.SystemVideoPlayerActivity;
 import com.atguigu.lmm.palyer.adapter.LocalVideoAdapter;
-import com.atguigu.lmm.palyer.adapter.MediaItem;
+import com.atguigu.lmm.palyer.bean.MediaItem;
 import com.atguigu.lmm.palyer.base.BaseFragment;
 
 import java.util.ArrayList;
@@ -65,9 +69,35 @@ public class localVideoFragment extends BaseFragment {
         View view = View.inflate(mContext, R.layout.fragment_local_video, null);
         listView = (ListView) view.findViewById(R.id.listview);
         tv_no_media = (TextView) view.findViewById(R.id.tv_no_media);
+        //设置item的监听
+        listView.setOnItemClickListener(new MyOnItemClickListener());
 
 
         return view;
+    }
+
+    class MyOnItemClickListener implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            MediaItem mediaItem = mediaItems.get(position);
+          /*  Intent intent = new Intent();*/
+/*
+            intent.setDataAndType(Uri.parse(mediaItem.getData()), "video*//*");
+            startActivity(intent);*/
+            Intent intent = new Intent(mContext, SystemVideoPlayerActivity.class);
+            //    intent.setDataAndType(Uri.parse(mediaItem.getData()), "video/*");
+            Bundle bundle = new Bundle();
+            //列表数据
+            bundle.putSerializable("videolist", mediaItem);
+            intent.putExtras(bundle);
+            //传递点击的位置
+            intent.putExtra("position", position);
+
+
+            startActivity(intent);
+
+        }
     }
 
     public void initData() {
@@ -94,7 +124,7 @@ public class localVideoFragment extends BaseFragment {
                         MediaStore.Video.Media.DURATION,
                         MediaStore.Video.Media.SIZE,
                         MediaStore.Video.Media.DATA,
-                        MediaStore.Video.Media.ARTIST,
+                        MediaStore.Video.Media.ARTIST
 
                 };
 
@@ -109,6 +139,7 @@ public class localVideoFragment extends BaseFragment {
                         long duration = cursor.getLong(1);
                         mediaItem.setDuration(duration);
                         long size = cursor.getLong(2);
+                        mediaItem.setSize(size);
                         String data = cursor.getString(3);
                         mediaItem.setData(data);
                         String artist = cursor.getString(4);
@@ -127,8 +158,6 @@ public class localVideoFragment extends BaseFragment {
 
     public void onRefrshData() {
         super.onRefrshData();
-
-
     }
 
 
