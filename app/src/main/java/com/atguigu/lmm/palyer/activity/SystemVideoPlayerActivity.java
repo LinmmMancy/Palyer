@@ -569,6 +569,18 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         }
     }
 
+    private  void  updateVoiceProgress(int progress){
+        // 第一个参数。声音的类型
+        //第二个参数。 声音的值0-15
+        //第三个参数。1显示系统调声音的0，不显示
+        am.setStreamVolume(AudioManager.STREAM_MUSIC,progress,0);
+        seekbarVideo.setProgress(progress);
+
+
+        currentVolume= progress;
+
+    }
+
     class VideoOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
         /**
          * 状态变化的时候回调
@@ -670,13 +682,48 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
     }
 
+    private float startY;
+
+    /**
+     * 滑动的区域
+     * @param event
+     * @return
+     */
+    private int touchiRang=0;
+    /**
+     * 当按下的时候的音量
+     */
+
+    private  int mVol;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
         detector.onTouchEvent(event);//将事件船体给手势识别器
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            return true;
+            //1.按下的时候记录其实坐标
+            startY=event.getY();
+            touchiRang=Math.min(screeHeight,screenWidth);
+            mVol=am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            //把消息移除
+            handler.removeMessages(HIDE_MEDIA_CONTROLLER);
+
+        }else if(event.getAction()==MotionEvent.ACTION_MOVE){
+            float endY=event.getY();
+            //滑動屏幕的距离
+            float distanceY=startY-endY;
+            //滑动屏幕的距离
+            float delta=(distanceY/touchiRang) * maxVolume;
+            int volue = (int) Math.min(Math.max(mVol + delta,0),maxVolume);
+            //判斷
+            if (delta!=0){
+                updateVoiceProgress(volue);
+            }
+
+        }else if (event.getAction()==MotionEvent.ACTION_UP){
+            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER,4000);
         }
-        return super.onTouchEvent(event);
+        return true;
     }
 
     private void getData() {
