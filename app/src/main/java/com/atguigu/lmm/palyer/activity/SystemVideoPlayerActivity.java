@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static android.R.attr.level;
+import static android.R.attr.progress;
 
 public class SystemVideoPlayerActivity extends Activity implements VideoView.OnClickListener {
     VideoView videoView;
@@ -47,6 +49,23 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
      * 进度更新
      */
     private static final int PROGRESS = 0;
+    /**
+     * 音频管理者
+     */
+    private AudioManager am;
+    /**
+     * 当前音量
+     */
+    private int currentVolume;
+    /**
+     * 最大音量：0-15
+     */
+    private int maxVolume;
+    /**
+     * 是否静音
+     */
+    private boolean isMute = false;
+
 
     /**
      * 隐藏控制面板
@@ -129,6 +148,15 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         btnSwichScreen.setOnClickListener(this);
 
         hideMediaController();//隐藏控制面板
+
+        //获取音频的最大值15，当前值
+        am = (AudioManager) getSystemService(AUDIO_SERVICE);
+        currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+        //和seekbar关联
+        seekbarVideo.setMax(maxVolume);
+        seekbarVideo.setProgress(currentVolume);
     }
 
     private void hideMediaController() {
@@ -330,6 +358,8 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
     @Override
     public void onClick(View v) {
         if (v == btnVoice) {
+            isMute = !isMute;
+            updateVoice(currentVolume);
 
         } else if (v == btnSwichePlayer) {
 
@@ -356,6 +386,17 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
         }
 
+    }
+
+    private void updateVoice(int currentVolume) {
+        if (isMute) {
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+            seekbarVideo.setProgress(0);
+        } else {
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+            seekbarVideo.setProgress(progress);
+        }
+        currentVolume = progress;
     }
 
 
@@ -488,12 +529,47 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         // videoView.setMediaController(new MediaController(this));
 
 
-        //设置视频的拖动
-        seekbarVideo.setOnSeekBarChangeListener(new MyOnSeekBarChangeListener());
+        //设置视频的拖动的监听
+        seekbarVideo.setOnSeekBarChangeListener(new VoiceOnSeekBarChangeListener());
+        //设置监听滑动声音
+        seekbarVoice.setOnSeekBarChangeListener(new VoiceOnSeekBarChangeListener());
 
     }
 
-    class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+    class VoiceOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if (fromUser) {
+                updateVoice(progress);
+            }
+        }
+
+        /**
+         * 当手指按下的时候回调
+         *
+         * @param seekBar
+         */
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            //移除消息
+            handler.removeMessages(HIDE_MEDIA_CONTROLLER);
+
+        }
+
+        /**
+         * 当手指离开的时候回调
+         *
+         * @param seekBar
+         */
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER, 4000);
+
+        }
+    }
+
+    class VideoOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
         /**
          * 状态变化的时候回调
          *
