@@ -89,9 +89,9 @@ public class localVideoFragment extends BaseFragment {
             //    intent.setDataAndType(Uri.parse(mediaItem.getData()), "video/*");
             Bundle bundle = new Bundle();
             //列表数据
-            bundle.putSerializable("videolist", mediaItem);
+            bundle.putSerializable("videolist", mediaItems);
             intent.putExtras(bundle);
-            //传递点击的位置
+            //传递点击的位置a
             intent.putExtra("position", position);
 
 
