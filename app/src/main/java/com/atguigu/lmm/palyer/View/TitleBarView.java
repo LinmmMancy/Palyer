@@ -1,4 +1,4 @@
-package com.atguigu.lmm.palyer.View;
+package com.atguigu.lmm.palyer.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

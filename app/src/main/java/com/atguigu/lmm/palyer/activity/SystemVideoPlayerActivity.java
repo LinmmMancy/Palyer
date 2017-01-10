@@ -5,12 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.icu.text.SimpleDateFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,19 +19,30 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.atguigu.lmm.palyer.R;
 import com.atguigu.lmm.palyer.Utils.Utils;
 import com.atguigu.lmm.palyer.bean.MediaItem;
+import com.atguigu.lmm.palyer.view.VideoView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import static android.R.attr.level;
 
 public class SystemVideoPlayerActivity extends Activity implements VideoView.OnClickListener {
-    private static final String TAG = SystemVideoPlayerActivity.class.getSimpleName();//
+    VideoView videoView;
+    private static final
+    String TAG = SystemVideoPlayerActivity.class.getSimpleName();//
+    /**
+     * 视频默认屏幕大小播放
+     */
+    private static final int VIDEO_TYPE_DEFAULT = 1;
+    /**
+     * 视频全屏播放
+     */
+    private static final int VIDEO_TYPE_FULL = 2;
     /**
      * 进度更新
      */
@@ -41,8 +52,6 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
      * 隐藏控制面板
      */
     private static final int HIDE_MEDIA_CONTROLLER = 1;
-    private VideoView videoview;
-    private VideoView videoView;
     private LinearLayout llTop;
     private TextView tvName;
     private ImageView ivBattery;
@@ -61,6 +70,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
     private Button btnSwichScreen;
     private Utils utils;
     private MyBroadcastReceiver receiver;
+    private VideoView videoview;
 
     /**
      * 列表数据
@@ -74,6 +84,14 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
      * 是否后显示控制面板
      */
     private boolean isShowMediaController = false;
+    /**
+     * 视频是否全屏显示
+     */
+    private boolean isFullScreen = false;
+    private int screenWidth = 0;
+    private int screeHeight = 0;
+    private int videoWidth = 0;
+    private int videoHeight = 0;
 
     /**
      * 视频播放地址
@@ -147,7 +165,17 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
         //初始化手势识别器
         detector = new GestureDetector(this, new MySimpleOnGestureListener());
+
+
+        //得到屏幕的宽和高
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        //得到屏幕参数类
+        getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
+        //屏幕的宽和高
+        screenWidth = outMetrics.widthPixels;
+        screeHeight = outMetrics.heightPixels;
     }
+
 
     class MySimpleOnGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
@@ -158,6 +186,13 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
+            if (isFullScreen) {
+                //设置默认
+                setvideoType(VIDEO_TYPE_DEFAULT);
+            } else {
+                //全屏显示
+                setvideoType(VIDEO_TYPE_FULL);
+            }
             return super.onDoubleTap(e);
         }
 
@@ -179,6 +214,38 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
             return super.onSingleTapConfirmed(e);
 
         }
+    }
+
+    private void setvideoType(int videoTypeDefault) {
+        switch (videoTypeDefault) {
+            case VIDEO_TYPE_FULL:
+                isFullScreen = true;
+
+               /* VideoView.setViewSize(screenWidth, screeHeight);*/
+                //把按钮设置/默认
+                btnSwichScreen.setBackgroundResource(R.drawable.btn_screen_default_selector);
+                break;
+            case VIDEO_TYPE_DEFAULT://视频画面的默认
+                isFullScreen = false;
+
+                //视频原始的画面大小
+                int mVideoWidth = videoWidth;
+                int mVideoHeight = videoHeight;
+/*
+                if (mVideoWidth * height < width * mVideoHeight) {
+                    //Log.i("@@@", "image too wide, correcting");
+                    width = height * mVideoWidth / mVideoHeight;
+                } else if (mVideoWidth * height > width * mVideoHeight) {
+                    //Log.i("@@@", "image too tall, correcting");
+                    height = width * mVideoHeight / mVideoWidth;
+                }
+                //把计算好的视频大小传递过去
+                videoView.setViewSize(width, height);
+                //把按钮设置--全屏*/
+                btnSwichScreen.setBackgroundResource(R.drawable.btn_screen_full_selector);
+                break;
+        }
+
     }
 
     /**
@@ -279,6 +346,13 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
             setNextVideo();
 
         } else if (v == btnSwichScreen) {
+            if (isFullScreen) {
+                //设置默认
+                setvideoType(VIDEO_TYPE_DEFAULT);
+            } else {
+                //全屏显示、
+                setvideoType(VIDEO_TYPE_FULL);
+            }
 
         }
 
@@ -286,7 +360,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
 
     private void startAndPause() {
-        if (videoView.isPlaying()) {
+       /* if (videoView.isPlaying()) {
             //当前播放设置为暂停
             videoView.pause();
             //按钮状态-播放状态
@@ -294,11 +368,11 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
         } else {
             //当前暂停状态要设置播放状态
-            videoView.start();
-            //按钮状态-暂停状态
-            btnStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
-        }
+            videoView.start();*/
+        //按钮状态-暂停状态
+        btnStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
     }
+
 
     private void setNextVideo() {
         //判断一下列表
@@ -309,7 +383,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
                 //设置标题
                 tvName.setText(mediaItem.getName());
                 //设置播放地址
-                videoView.setVideoPath(mediaItem.getData());
+                // videoView.setVideoPath(mediaItem.getData());
                 checkButtonStatus();
             } else {
                 //越界
@@ -332,7 +406,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
                 //设置标题
                 tvName.setText(mediaItem.getName());
                 //设置播放地址
-                videoView.setVideoPath(mediaItem.getData());
+                //  videoView.setVideoPath(mediaItem.getData());
                 checkButtonStatus();
             } else {
                 //越界
@@ -406,6 +480,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
     private void setLinstener() {
         //设置好视频播放监听：准备好的监听，播放出错监听，播放完成监听
 
+
         videoView.setOnPreparedListener(new MyOnPreparedListener());
         videoView.setOnErrorListener(new MyOnErrorListener());
         videoView.setOnCompletionListener(new MyOnCompletionListener());
@@ -429,6 +504,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) {
+
                 videoView.seekTo(progress);
             }
         }
@@ -473,6 +549,10 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
             setNextVideo();
 
         }
+
+        private void setNextVideo() {
+
+        }
     }
 
     class MyOnErrorListener implements MediaPlayer.OnErrorListener {
@@ -488,6 +568,14 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
          * 当底层加载视频准备完成的时候回调
          */
         public void onPrepared(MediaPlayer mp) {
+            //得到视频原始大小
+
+            videoWidth = mp.getVideoWidth();
+            videoHeight = mp.getVideoHeight();
+
+            //设置默认大小
+            setvideoType(VIDEO_TYPE_DEFAULT);
+
             //开始播放
             videoView.start();
             //准备好的时候
