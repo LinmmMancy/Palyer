@@ -36,7 +36,6 @@ import static android.R.attr.keycode;
 import static android.R.attr.level;
 
 
-
 public class SystemVideoPlayerActivity extends Activity implements VideoView.OnClickListener {
 
     private static final
@@ -377,8 +376,8 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
             startAndPause();
 
-        } else if (v == btnNext){
-               setNextVideo();
+        } else if (v == btnNext) {
+            setNextVideo();
 
         } else if (v == btnSwichScreen) {
             if (isFullScreen) {
@@ -392,7 +391,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         }
         handler.removeMessages(HIDE_MEDIA_CONTROLLER);
         //重新发消息
-        handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER,4000);
+        handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER, 4000);
 
     }
 
@@ -582,13 +581,13 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         }
     }
 
-    private  void  updateVoiceProgress(int progress){
+    private void updateVoiceProgress(int progress) {
         am.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
         seekbarVoice.setProgress(progress);
-        if(progress <=0){
+        if (progress <= 0) {
             //设置静音
             isMute = true;
-        }else {
+        } else {
             isMute = false;
         }
 
@@ -656,27 +655,27 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
         private void setNextVideo() {
             //判断一下列表
-            if (mediaItems!=null&&mediaItems.size()>0){
+            if (mediaItems != null && mediaItems.size() > 0) {
                 position++;
-                if (position<mediaItems.size()){
-                    MediaItem mediaItem =mediaItems.get(position);
+                if (position < mediaItems.size()) {
+                    MediaItem mediaItem = mediaItems.get(position);
                     //设置标题
                     tvName.setText(mediaItem.getName());
                     //设置播放地址
                     videoview.setVideoPath(mediaItem.getData());
                     //专题的校验
                     checkButtonStatus();
-                    if (position==mediaItems.size()-1){
+                    if (position == mediaItems.size() - 1) {
                         Toast.makeText(SystemVideoPlayerActivity.this, "哥们播放最后一个视频了哦", Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                } else {
                     //越界
-                    position=mediaItems.size()-1;
+                    position = mediaItems.size() - 1;
                     finish();
                 }
             }
             //单个的uri
-            else if (uri!=null){
+            else if (uri != null) {
                 finish();
             }
         }
@@ -687,7 +686,7 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
             Toast.makeText(SystemVideoPlayerActivity.this, "播放出错了，亲", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
     }
 
@@ -730,15 +729,16 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
     /**
      * 滑动的区域
+     *
      * @param event
      * @return
      */
-    private int touchRang=0;
+    private int touchRang = 0;
     /**
      * 当按下的时候的音量
      */
 
-    private  int mVol;
+    private int mVol;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -746,26 +746,26 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         detector.onTouchEvent(event);//将事件船体给手势识别器
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             //1.按下的时候记录其实坐标
-            startY=event.getY();
-            touchRang=Math.min(screeHeight,screenWidth);
-            mVol=am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            startY = event.getY();
+            touchRang = Math.min(screeHeight, screenWidth);
+            mVol = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             //把消息移除
             handler.removeMessages(HIDE_MEDIA_CONTROLLER);
 
-        }else if(event.getAction()==MotionEvent.ACTION_MOVE){
-            float endY=event.getY();
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            float endY = event.getY();
             //滑動屏幕的距离
-            float distanceY=startY-endY;
+            float distanceY = startY - endY;
             //滑动屏幕的距离
-            float delta=(distanceY/touchRang) * maxVolume;
-            int volue = (int) Math.min(Math.max(mVol + delta,0),maxVolume);
+            float delta = (distanceY / touchRang) * maxVolume;
+            int volue = (int) Math.min(Math.max(mVol + delta, 0), maxVolume);
             //判斷
-            if (delta!=0){
+            if (delta != 0) {
                 updateVoiceProgress(volue);
             }
 
-        }else if (event.getAction()==MotionEvent.ACTION_UP){
-            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER,4000);
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER, 4000);
         }
         return true;
     }
@@ -779,23 +779,23 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keycode==KeyEvent.KEYCODE_VOLUME_DOWN){
+        if (keycode == KeyEvent.KEYCODE_VOLUME_DOWN) {
             currentVolume--;
             updateVoiceProgress(currentVolume);
             //移除消息
             handler.removeMessages(HIDE_MEDIA_CONTROLLER);
             //发消息
-            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER,4000);
+            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER, 4000);
             return true;
 
-        }else if (keyCode==KeyEvent.KEYCODE_VOLUME_UP){
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             currentVolume++;
             updateVoiceProgress(currentVolume);
             handler.removeMessages(HIDE_MEDIA_CONTROLLER);
-            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER,4000);
+            handler.sendEmptyMessageDelayed(HIDE_MEDIA_CONTROLLER, 4000);
             return true;
         }
-        return super.onKeyDown(keyCode,event);
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
