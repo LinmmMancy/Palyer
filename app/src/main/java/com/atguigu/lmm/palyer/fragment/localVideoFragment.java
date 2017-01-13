@@ -47,7 +47,7 @@ public class localVideoFragment extends BaseFragment {
                 //有数据
                 //文本隐藏
                 tv_no_media.setVisibility(View.GONE);
-                adapter = new LocalVideoAdapter(mContext, mediaItems);
+                adapter = new LocalVideoAdapter(mContext, mediaItems, true);
                 //设置适配器
                 listView.setAdapter(adapter);
             } else {

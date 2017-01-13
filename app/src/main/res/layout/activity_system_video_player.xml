@@ -17,4 +17,8 @@
 
     <include layout="@layout/mediacontroller" />
 
+    <include
+        android:id="@+id/ll_loading"
+        layout="@layout/loading" />
+
 </RelativeLayout>

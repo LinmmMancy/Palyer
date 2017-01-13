@@ -91,6 +91,11 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
     private Button btnStartPause;
     private Button btnNext;
     private Button btnSwichScreen;
+
+
+    private TextView tv_loading;
+
+    private LinearLayout ll_loading;
     private Utils utils;
     private MyBroadcastReceiver receiver;
     public VideoView videoview;
@@ -142,6 +147,8 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         btnStartPause = (Button) findViewById(R.id.btn_start_pause);
         btnNext = (Button) findViewById(R.id.btn_next);
         btnSwichScreen = (Button) findViewById(R.id.btn_swich_screen);
+        ll_loading = (LinearLayout) findViewById(R.id.ll_loading);
+        tv_loading = (TextView) findViewById(R.id.tv_loading);
 
         btnVoice.setOnClickListener(this);
         btnSwichePlayer.setOnClickListener(this);
@@ -433,6 +440,8 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
             position++;
             if (position < mediaItems.size()) {
                 MediaItem mediaItem = mediaItems.get(position);
+                //显示加载页面
+                ll_loading.setVisibility(View.VISIBLE);
                 //设置标题
                 tvName.setText(mediaItem.getName());
                 //设置播放地址
@@ -455,6 +464,8 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
         if (mediaItems != null && mediaItems.size() > 0) {
             position--;
             if (position > 0) {
+                //显示加载页面
+                ll_loading.setVisibility(View.VISIBLE);
                 MediaItem mediaItem = mediaItems.get(position);
                 //设置标题
                 tvName.setText(mediaItem.getName());
@@ -720,6 +731,9 @@ public class SystemVideoPlayerActivity extends Activity implements VideoView.OnC
 
             //发消息
             handler.sendEmptyMessage(PROGRESS);
+
+            //隐藏记载等待页面
+            ll_loading.setVisibility(View.GONE);
 
 
         }

@@ -14,9 +14,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-   public void startAllVideo(View view){
-       Intent intent=new Intent();
-       intent.setDataAndType (Uri.parse("http://vfx.mtime.cn/Video/2016/12/29/mp4/161229134943070513_480.mp4"), "video/*");
-       startActivity(intent);
-   }
+    public void startAllVideo(View view) {
+        Intent intent = new Intent();
+        intent.setDataAndType(Uri.parse("http://vfx.mtime.cn/Video/2016/12/14/mp4/161214234616222245.mp4"), "video/*");
+        startActivity(intent);
+    }
 }
